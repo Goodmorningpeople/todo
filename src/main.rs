@@ -1,16 +1,18 @@
 use clap::{command, value_parser, Arg, Command};
-use todo::{database::match_database, list::match_list, mark::match_mark, new::match_new, remove::match_remove};
+use todo::{add::match_add, database::match_database, list::match_list, mark::match_mark, remove::match_remove, sort::match_sort};
 
 fn main() {
     let match_result = command!()
         .about("Simple, efficient and useful cli application for keeping track of your tasks")
-        .subcommand(Command::new("db").about("db [file-name]: Create a new database file in local storage (~/Documents/<file-name>_todo.txt) to store your todos")
+        .subcommand(Command::new("database").about("database [options]: Commands to manipulate database files, database files are stored in (~/Documents/<file-name>_todo.txt)
+        --name: Create a new database and assign it a name")
             .arg(
                 Arg::new("file-name-input")
-                    .required(true) 
+                    .short('n')
+                    .long("new")
             )
         )
-        .subcommand(Command::new("new").about("new [task-name] [database-name]: Create a new todo-list task file in a database file of choice (~/Documents/<database-name>_todo.txt)")
+        .subcommand(Command::new("add").about("add [task-name] [database-name]: Create a new todo-list task file in a database file of choice (~/Documents/<database-name>_todo.txt)")
             .arg(
                 Arg::new("task-name-input")
                     .required(true) 
@@ -47,16 +49,21 @@ fn main() {
                 Arg::new("database-name-input")
                     .required(true) 
             )
-
+    )
+        .subcommand(Command::new("sort").about("sort [database-name]: Sorts todo-list, placing tasks marked as done at the bottom and tasks not completed yet at the top")
+            .arg(
+                Arg::new("database-name-input")
+                    .required(true)
+            )  
     )
         .get_matches();
     
     // Match arguments with match functions
-    let database_args = match_result.subcommand_matches("db");
+    let database_args = match_result.subcommand_matches("database");
     match_database(database_args);
 
-    let new_args = match_result.subcommand_matches("new");
-    match_new(new_args);
+    let add_args = match_result.subcommand_matches("add");
+    match_add(add_args);
 
     let list_args = match_result.subcommand_matches("list");
     match_list(list_args);
@@ -66,4 +73,7 @@ fn main() {
 
     let remove_args = match_result.subcommand_matches("remove");
     match_remove(remove_args);
+
+    let sort_args = match_result.subcommand_matches("sort");
+    match_sort(sort_args);
 }

@@ -6,8 +6,8 @@ use std::{
 use clap::ArgMatches;
 use home::home_dir;
 
-pub fn match_new(new_args: Option<&ArgMatches>) {
-    if let Some(args) = new_args {
+pub fn match_add(add_args: Option<&ArgMatches>) {
+    if let Some(args) = add_args {
         // initialize required variables
         let task_name = args.get_one::<String>("task-name-input").unwrap();
         let database_name = args.get_one::<String>("database-name-input").unwrap();
