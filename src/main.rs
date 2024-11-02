@@ -1,5 +1,5 @@
 use clap::{command, value_parser, Arg, Command};
-use todo::{add::match_add, database::match_database, list::match_list, mark::match_mark, remove::match_remove, sort::match_sort};
+use todo::{add::match_add, clear::match_clear, database::match_database, list::match_list, mark::match_mark, remove::match_remove, sort::match_sort};
 
 fn main() {
     let match_result = command!()
@@ -12,7 +12,7 @@ fn main() {
                     .long("new")
             )
         )
-        .subcommand(Command::new("add").about("add [task-name] [database-name]: Create a new todo-list task file in a database file of choice (~/Documents/<database-name>_todo.txt)")
+        .subcommand(Command::new("add").about("add [task-name] [database-name]: Create a new todo-list task file in a selected database file")
             .arg(
                 Arg::new("task-name-input")
                     .required(true) 
@@ -28,7 +28,7 @@ fn main() {
                     .required(true) 
             )
         )
-        .subcommand(Command::new("mark").about("mark [task-index] [database-name]: Input the task number of a task in a specified database to mark the task as done")
+        .subcommand(Command::new("mark").about("mark [task-index] [database-name]: Input the task number of a task in a selected database file to mark the task as done")
             .arg(
                 Arg::new("task-index-input")
                     .required(true) 
@@ -39,7 +39,7 @@ fn main() {
                     .required(true) 
             )
         )
-        .subcommand(Command::new("remove").about("remove [task-index] [database-name]: Input the task number of a task in specified database to remove the task")
+        .subcommand(Command::new("remove").about("remove [task-index] [database-name]: Input the task number of a task in selected database file to remove the task")
             .arg(
                 Arg::new("task-index-input")
                     .required(true)
@@ -50,7 +50,13 @@ fn main() {
                     .required(true) 
             )
     )
-        .subcommand(Command::new("sort").about("sort [database-name]: Sorts todo-list, placing tasks marked as done at the bottom and tasks not completed yet at the top")
+        .subcommand(Command::new("sort").about("sort [database-name]: Sorts todo-list, placing tasks marked as done at the bottom and tasks not completed yet at the top in a selected database file")
+            .arg(
+                Arg::new("database-name-input")
+                    .required(true)
+            )  
+    )
+        .subcommand(Command::new("clear").about("clear [database-name]: Clears all tasks marked as done in a selected database file")
             .arg(
                 Arg::new("database-name-input")
                     .required(true)
@@ -76,4 +82,7 @@ fn main() {
 
     let sort_args = match_result.subcommand_matches("sort");
     match_sort(sort_args);
+
+    let clear_args = match_result.subcommand_matches("clear");
+    match_clear(clear_args);
 }
