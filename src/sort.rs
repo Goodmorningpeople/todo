@@ -23,9 +23,9 @@ pub fn match_sort(sort_args: Option<&ArgMatches>) {
                 .join(format!("{}_todo.txt", database_name));
 
             match read_lines(&database_path) {
-                Ok(mut lines) => {
+                Ok(lines) => {
                     let mut counter = 0;
-                    while let Some(entry) = lines.next() {
+                    for entry in lines {
                         match entry {
                             Ok(line) => {
                                 if counter == 0 {
@@ -65,14 +65,12 @@ pub fn match_sort(sort_args: Option<&ArgMatches>) {
                                     updated_lines.push(line.clone()); // Assuming the first line is a header
                                 } else if line.is_empty() {
                                     continue;
-                                } else {
-                                    if !complete_tasks.is_empty() {
-                                        let task = complete_tasks.pop().unwrap();
-                                        updated_lines.push(format!("{}", task));
-                                    } else if !incomplete_tasks.is_empty() {
-                                        let task = incomplete_tasks.pop().unwrap();
-                                        updated_lines.push(format!("{}", task));
-                                    }
+                                } else if !complete_tasks.is_empty() {
+                                    let task = complete_tasks.pop().unwrap();
+                                    updated_lines.push(task);
+                                } else if !incomplete_tasks.is_empty() {
+                                    let task = incomplete_tasks.pop().unwrap();
+                                    updated_lines.push(task);
                                 }
                                 counter += 1;
                             }

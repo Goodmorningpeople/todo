@@ -20,7 +20,7 @@ pub fn match_database(database_args: Option<&ArgMatches>) {
                 match File::create(&file_path) {
                     Ok(mut file) => {
                         println!("Created {}_todo.txt in ~/Documents!", file_name);
-                        match file.write(b"TODO-LIST FILE, NOT TO BE TOUCHED") {
+                        match file.write_all(b"TODO-LIST FILE, NOT TO BE TOUCHED") {
                             Ok(_) => {}
                             Err(e) => {
                                 eprintln!("Failed to print validating statement to file: {:?}", e)

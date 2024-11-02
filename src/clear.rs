@@ -33,10 +33,8 @@ pub fn match_clear(clear_args: Option<&ArgMatches>) {
                                     counter += 1;
                                 } else if line.is_empty() {
                                     continue;
-                                } else {
-                                    if !line.contains("\x1B[9m") {
-                                        updated_lines.push(line.clone());
-                                    }
+                                } else if !line.contains("\x1B[9m") {
+                                    updated_lines.push(line.clone());
                                 }
                                 counter += 1;
                             }

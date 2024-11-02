@@ -20,7 +20,7 @@ pub fn match_add(add_args: Option<&ArgMatches>) {
                 .join(format!("{}_todo.txt", database_name));
 
             // Open database file and error handling for it
-            match OpenOptions::new().write(true).append(true).open(database_path) {
+            match OpenOptions::new().append(true).open(database_path) {
                 Ok(mut database_file) => {
                     match database_file.write_fmt(format_args!("\n{}", task_name)) {
                         Ok(_) => println!("Wrote new task into database!"),

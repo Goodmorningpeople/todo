@@ -34,15 +34,13 @@ pub fn match_mark(mark_args: Option<&ArgMatches>) {
                                     updated_lines.push(line.clone()); // Assuming the first line is a header
                                 } else if line.is_empty() {
                                     continue;
+                                } else if &(counter) == task_index {
+                                    // Replace the task with its crossed-out version
+                                    println!("{}", convert_to_crossed_out(line.trim()));
+                                    updated_lines.push(convert_to_crossed_out(line.trim()));
+                                    task_found = true;
                                 } else {
-                                    if &(counter) == task_index {
-                                        // Replace the task with its crossed-out version
-                                        println!("{}", convert_to_crossed_out(line.trim()));
-                                        updated_lines.push(convert_to_crossed_out(line.trim()));
-                                        task_found = true;
-                                    } else {
-                                        updated_lines.push(line.clone());
-                                    }
+                                    updated_lines.push(line.clone());
                                 }
                                 counter += 1;
                             }
@@ -83,7 +81,7 @@ where
         .write(true)
         .truncate(true)
         .open(filename)?;
-    
+
     for line in lines {
         writeln!(file, "{}", line)?;
     }

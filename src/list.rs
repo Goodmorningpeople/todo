@@ -21,9 +21,9 @@ pub fn match_list(list_args: Option<&ArgMatches>) {
 
             // Open database file and error handling for it
             match read_lines(database_path) {
-                Ok(mut lines) => {
+                Ok(lines) => {
                     let mut counter = 0;
-                    while let Some(entry) = lines.next() {
+                    for entry in lines {
                         match entry {
                             Ok(line) => {
                                 if counter == 0 {

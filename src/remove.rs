@@ -34,14 +34,12 @@ pub fn match_remove(remove_args: Option<&ArgMatches>) {
                                     updated_lines.push(line.clone()); // Assuming the first line is a header
                                 } else if line.is_empty() {
                                     continue;
+                                } else if &(counter) == task_index {
+                                    // Replace the task with its crossed-out version
+                                    println!("Task {} has been removed", task_index);
+                                    task_found = true;
                                 } else {
-                                    if &(counter) == task_index {
-                                        // Replace the task with its crossed-out version
-                                        println!("Task {} has been removed", task_index);
-                                        task_found = true;
-                                    } else {
-                                        updated_lines.push(line.clone());
-                                    }
+                                    updated_lines.push(line.clone());
                                 }
                                 counter += 1;
                             }
@@ -82,7 +80,7 @@ where
         .write(true)
         .truncate(true)
         .open(filename)?;
-    
+
     for line in lines {
         writeln!(file, "{}", line)?;
     }
