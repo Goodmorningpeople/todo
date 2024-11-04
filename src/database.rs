@@ -1,16 +1,21 @@
 use clap::ArgMatches;
 use home::home_dir;
-use std::{fs::File, io::Write};
+use std::{
+    fs::{self, File},
+    io::Write,
+};
 
 pub fn match_database(database_args: Option<&ArgMatches>) {
     if let Some(args) = database_args {
         // Initialize option variables
-        let file_name = args.get_one::<String>("file-name-input");
+        let new = args.get_one::<String>("new-option");
+        let list = args.get_flag("list-option");
+        let remove = args.get_one::<String>("remove-option");
 
         // Get the home directory
         if let Some(home) = home_dir() {
             // if file name option is used
-            if let Some(file_name) = file_name {
+            if let Some(file_name) = new {
                 // Create the path to the new file
                 let file_path = home
                     .join("Documents")
@@ -32,9 +37,65 @@ pub fn match_database(database_args: Option<&ArgMatches>) {
                         file_name, e
                     ),
                 }
-            } else {
-                eprintln!("Could not determine the home directory.");
+            } else if list {
+                match fs::read_dir(home.join("Documents")) {
+                    Ok(paths) => {
+                        let mut counter = 0;
+                        for entry in paths {
+                            match entry {
+                                Ok(path) => {
+                                    let name = path.path().display().to_string();
+                                    if name.ends_with("_todo.txt") {
+                                        counter += 1;
+                                        println!(
+                                            "{}",
+                                            name.strip_suffix("_todo.txt")
+                                                .unwrap()
+                                                .strip_prefix(
+                                                    home.join("Documents/").to_str().unwrap()
+                                                )
+                                                .unwrap()
+                                        )
+                                    }
+                                }
+                                Err(e) => eprintln!("Failed to get path entry: {:?}", e),
+                            }
+                        }
+                        if counter == 0 {
+                            println!("You have no database files");
+                        }
+                    }
+                    Err(e) => eprintln!("Failed to read ~/Documents directory: {:?}", e),
+                }
             }
+            if let Some(database_name) = remove {
+                match fs::read_dir(home.join("Documents")) {
+                    Ok(paths) => {
+                        for entry in paths {
+                            match entry {
+                                Ok(path) => {
+                                    let name = path.path().strip_prefix(home.join("Documents/")).unwrap().display().to_string();
+                                    if name.contains(database_name) && name.contains("_todo.txt") {
+                                        match fs::remove_file(
+                                            home.join("Documents/")
+                                                .join(name)
+                                        ) {
+                                            Ok(_) => println!("Removed database file!"),
+                                            Err(e) => {
+                                                eprintln!("Failed to remove database file: {:?}", e)
+                                            }
+                                        }
+                                    }
+                                }
+                                Err(e) => eprintln!("Failed to get path entry: {:?}", e),
+                            }
+                        }
+                    }
+                    Err(e) => eprintln!("Failed to read ~/Documents directory: {:?}", e),
+                }
+            }
+        } else {
+            eprintln!("Could not determine the home directory.");
         }
     }
 }
